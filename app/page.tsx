@@ -57,7 +57,7 @@ export default function Home() {
           <div className="flex gap-5 text-xs text-zinc-500 sm:gap-8">
             <a className="hover:text-zinc-100" href="#widgets">./widgets</a>
             <a className="hover:text-zinc-100" href="#reference">./reference</a>
-            <a className="hover:text-zinc-100" href="https://sarindu.dev">./website</a>
+            <a className="hover:text-zinc-100" href="https://sarindu.site">./website</a>
           </div>
         </nav>
       </header>
@@ -136,8 +136,8 @@ export default function Home() {
             ))}
           </div>
           <div className="mt-6 overflow-x-auto border border-zinc-800 bg-zinc-950 p-5 text-xs leading-6">
-            <p className="text-zinc-600"># local README usage</p>
-            <p><span className="text-zinc-400">![Tech Stack]</span><span className="text-zinc-600">(</span><span className="text-green-400">http://localhost:3000/api/title?text=Tech%20Stack</span><span className="text-zinc-600">)</span></p>
+            <p className="text-zinc-600"># README usage</p>
+            <p><span className="text-zinc-400">![Tech Stack]</span><span className="text-zinc-600">(</span><span className="text-green-400">https://your-project.vercel.app/api/title?text=Tech%20Stack</span><span className="text-zinc-600">)</span></p>
           </div>
         </div>
       </section>
