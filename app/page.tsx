@@ -1,69 +1,46 @@
-import Image from "next/image";
+/* Dynamic SVG API previews intentionally use native img elements. */
+/* eslint-disable @next/next/no-img-element */
+const widgets = [
+  ["Title", "title?text=Tech%20Stack", "The animated section heading I use for major parts of my profile."],
+  ["Subtitle", "subtitle?text=Frontend%20Development", "A smaller divider for grouping tools inside my README."],
+  ["Typing", "typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder", "My rotating professional titles with the original typewriter treatment."],
+  ["Browser header", "browser?url=sarindu.dev", "The browser-style header at the top of my profile."],
+  ["Footer", "footer?text=Keep%20building.%20Keep%20learning.", "The compact status bar that closes my README."],
+] as const;
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+  return <main>
+    <nav className="nav shell">
+      <a className="brand" href="#top"><span className="brandMark">S/</span> Sarindu&apos;s README Kit</a>
+      <div className="navLinks"><a href="#widgets">My widgets</a><a href="#api">Reference</a><a href="https://sarindu.dev">sarindu.dev</a></div>
+    </nav>
+
+    <section className="hero shell" id="top">
+      <div className="eyebrow"><span /> THE SVG TOOLKIT BEHIND MY GITHUB PROFILE</div>
+      <h1>My README,<br /><em>built from small parts.</em></h1>
+      <p>A private collection of reusable SVG endpoints made for my own GitHub profile—one visual system, easy to update from a URL.</p>
+      <div className="heroActions"><a className="primaryButton" href="#widgets">See my widgets <span>↓</span></a><code>![title](my-domain/api/title?text=Tech%20Stack)</code></div>
+      <div className="heroPreview">
+        <img src="/api/title?text=README%20Widgets" alt="README Widgets title" />
+        <img src="/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder" alt="Animated professional titles" />
+      </div>
+    </section>
+
+    <section className="widgets shell" id="widgets">
+      <div className="sectionHeading"><div><span className="kicker">MY COLLECTION</span><h2>Five profile primitives.</h2></div><p>These are the pieces used across my README. Each endpoint keeps the same warm, editorial theme and renders as a lightweight SVG.</p></div>
+      <div className="widgetGrid">{widgets.map(([name, path, description], index) => <article className={`widgetCard card${index + 1}`} key={name}>
+        <div className="cardTop"><span>0{index + 1}</span><h3>{name}</h3></div><p>{description}</p>
+        <div className="preview"><img src={`/api/${path}`} alt={`${name} widget preview`} /></div>
+        <a href={`/api/${path}`} target="_blank">Open endpoint <span>↗</span></a>
+      </article>)}</div>
+    </section>
+
+    <section className="api shell" id="api">
+      <div><span className="kicker">PERSONAL API REFERENCE</span><h2>One visual system,<br />controlled by URLs.</h2><p>I can change copy and presentation from query parameters without manually editing and committing a new SVG every time.</p></div>
+      <div className="codePanel"><div className="codeHeader"><i /><i /><i /><span>README.md</span></div><pre><span className="muted">&lt;!-- A section in my profile README --&gt;</span>{`\n`}<span className="pink">![Tech Stack]</span>(<span className="green">https://my-domain/api/title</span>{`\n  `}?<span className="blue">text</span>=Tech%20Stack{`\n  `}&amp;<span className="blue">accent</span>=%23D2A162{`\n  `}&amp;<span className="blue">line</span>=%23625B52{`\n`})</pre></div>
+      <div className="parameterRow">{[["text / url", "Widget content"], ["color", "Text color"], ["accent", "Copper/gold accent"], ["background", "Panel background"], ["line", "Title line color"], ["size / duration", "Type-specific tuning"]].map(([key, value]) => <div key={key}><code>{key}</code><span>{value}</span></div>)}</div>
+    </section>
+
+    <footer className="siteFooter shell"><span className="brand"><span className="brandMark">S/</span> Sarindu&apos;s README Kit</span><p>A personal tool by Sarindu for keeping my GitHub profile consistent.</p></footer>
+  </main>;
 }
