@@ -1,46 +1,153 @@
-/* Dynamic SVG API previews intentionally use native img elements. */
+/* SVG API previews intentionally use native img elements. */
 /* eslint-disable @next/next/no-img-element */
+
 const widgets = [
-  ["Title", "title?text=Tech%20Stack", "The animated section heading I use for major parts of my profile."],
-  ["Subtitle", "subtitle?text=Frontend%20Development", "A smaller divider for grouping tools inside my README."],
-  ["Typing", "typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder", "My rotating professional titles with the original typewriter treatment."],
-  ["Browser header", "browser?url=sarindu.dev", "The browser-style header at the top of my profile."],
-  ["Footer", "footer?text=Keep%20building.%20Keep%20learning.", "The compact status bar that closes my README."],
+  {
+    command: "title",
+    name: "Section title",
+    description: "Animated heading with text-aware symmetric geometry.",
+    path: "title?text=Tech%20Stack",
+  },
+  {
+    command: "subtitle",
+    name: "Section subtitle",
+    description: "Compact divider with lines that adapt to the label.",
+    path: "subtitle?text=Frontend%20Development",
+  },
+  {
+    command: "typing",
+    name: "Typing titles",
+    description: "Cycles through up to three professional titles.",
+    path: "typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder",
+  },
+  {
+    command: "browser",
+    name: "Browser header",
+    description: "The browser-style header used at the top of my profile.",
+    path: "browser?url=sarindu.dev",
+  },
+  {
+    command: "footer",
+    name: "README footer",
+    description: "A compact status bar for the end of my profile.",
+    path: "footer?text=Keep%20building.%20Keep%20learning.",
+  },
+] as const;
+
+const parameters = [
+  ["text", "Widget copy or pipe-separated typing phrases"],
+  ["url", "Browser address-field content"],
+  ["color", "Primary text color"],
+  ["accent", "Accent and cursor color"],
+  ["line", "Title or subtitle line color"],
+  ["background", "Browser or footer background"],
+  ["size", "Title and subtitle font size"],
+  ["duration", "Seconds per typing phrase"],
 ] as const;
 
 export default function Home() {
-  return <main>
-    <nav className="nav shell">
-      <a className="brand" href="#top"><span className="brandMark">S/</span> Sarindu&apos;s README Kit</a>
-      <div className="navLinks"><a href="#widgets">My widgets</a><a href="#api">Reference</a><a href="https://sarindu.dev">sarindu.dev</a></div>
-    </nav>
+  return (
+    <main className="min-h-screen bg-[#090909] font-mono text-zinc-300">
+      <header className="border-b border-zinc-800">
+        <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-5">
+          <a href="#top" className="flex items-center gap-3 text-sm text-zinc-100">
+            <span className="text-green-400">sarindu@readme</span>
+            <span className="text-zinc-600">:~$</span>
+          </a>
+          <div className="flex gap-5 text-xs text-zinc-500 sm:gap-8">
+            <a className="hover:text-zinc-100" href="#widgets">./widgets</a>
+            <a className="hover:text-zinc-100" href="#reference">./reference</a>
+            <a className="hover:text-zinc-100" href="https://sarindu.dev">./website</a>
+          </div>
+        </nav>
+      </header>
 
-    <section className="hero shell" id="top">
-      <div className="eyebrow"><span /> THE SVG TOOLKIT BEHIND MY GITHUB PROFILE</div>
-      <h1>My README,<br /><em>built from small parts.</em></h1>
-      <p>A private collection of reusable SVG endpoints made for my own GitHub profile—one visual system, easy to update from a URL.</p>
-      <div className="heroActions"><a className="primaryButton" href="#widgets">See my widgets <span>↓</span></a><code>![title](my-domain/api/title?text=Tech%20Stack)</code></div>
-      <div className="heroPreview">
-        <img src="/api/title?text=README%20Widgets" alt="README Widgets title" />
-        <img src="/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder" alt="Animated professional titles" />
-      </div>
-    </section>
+      <section id="top" className="mx-auto w-full max-w-6xl border-x border-zinc-800 px-5 py-20 sm:px-10 sm:py-28">
+        <p className="mb-7 text-xs text-zinc-500">
+          <span className="text-green-400">●</span> process: readme-widgets&nbsp;&nbsp;status: online
+        </p>
+        <p className="mb-4 text-sm text-zinc-500">$ ./introduce.sh</p>
+        <h1 className="max-w-4xl text-4xl font-medium tracking-tight text-zinc-100 sm:text-6xl lg:text-7xl">
+          Sarindu&apos;s personal<br />README widget service<span className="animate-pulse text-green-400">_</span>
+        </h1>
+        <p className="mt-8 max-w-2xl text-sm leading-7 text-zinc-500 sm:text-base">
+          Five server-rendered SVG endpoints used to keep my GitHub profile consistent. No dashboard, accounts, analytics, or external APIs.
+        </p>
+        <div className="mt-10 flex flex-col gap-3 text-xs sm:flex-row sm:items-center">
+          <a href="#widgets" className="w-fit border border-zinc-600 bg-zinc-100 px-4 py-3 text-zinc-950 hover:bg-white">
+            $ list-widgets
+          </a>
+          <code className="overflow-x-auto border border-zinc-800 bg-zinc-950 px-4 py-3 text-zinc-500">
+            GET /api/title?text=Tech%20Stack
+          </code>
+        </div>
 
-    <section className="widgets shell" id="widgets">
-      <div className="sectionHeading"><div><span className="kicker">MY COLLECTION</span><h2>Five profile primitives.</h2></div><p>These are the pieces used across my README. Each endpoint keeps the same warm, editorial theme and renders as a lightweight SVG.</p></div>
-      <div className="widgetGrid">{widgets.map(([name, path, description], index) => <article className={`widgetCard card${index + 1}`} key={name}>
-        <div className="cardTop"><span>0{index + 1}</span><h3>{name}</h3></div><p>{description}</p>
-        <div className="preview"><img src={`/api/${path}`} alt={`${name} widget preview`} /></div>
-        <a href={`/api/${path}`} target="_blank">Open endpoint <span>↗</span></a>
-      </article>)}</div>
-    </section>
+        <div className="mt-16 border border-zinc-800 bg-zinc-950">
+          <div className="flex h-10 items-center justify-between border-b border-zinc-800 px-4 text-[11px] text-zinc-600">
+            <span>preview.log</span><span>80×24</span>
+          </div>
+          <div className="space-y-2 overflow-hidden px-3 py-6 sm:px-8">
+            <img className="mx-auto block w-full" src="/api/title?text=README%20Widgets" alt="README Widgets title" />
+            <img className="mx-auto block max-w-full" src="/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder" alt="Animated professional titles" />
+          </div>
+        </div>
+      </section>
 
-    <section className="api shell" id="api">
-      <div><span className="kicker">PERSONAL API REFERENCE</span><h2>One visual system,<br />controlled by URLs.</h2><p>I can change copy and presentation from query parameters without manually editing and committing a new SVG every time.</p></div>
-      <div className="codePanel"><div className="codeHeader"><i /><i /><i /><span>README.md</span></div><pre><span className="muted">&lt;!-- A section in my profile README --&gt;</span>{`\n`}<span className="pink">![Tech Stack]</span>(<span className="green">https://my-domain/api/title</span>{`\n  `}?<span className="blue">text</span>=Tech%20Stack{`\n  `}&amp;<span className="blue">accent</span>=%23D2A162{`\n  `}&amp;<span className="blue">line</span>=%23625B52{`\n`})</pre></div>
-      <div className="parameterRow">{[["text / url", "Widget content"], ["color", "Text color"], ["accent", "Copper/gold accent"], ["background", "Panel background"], ["line", "Title line color"], ["size / duration", "Type-specific tuning"]].map(([key, value]) => <div key={key}><code>{key}</code><span>{value}</span></div>)}</div>
-    </section>
+      <section id="widgets" className="border-y border-zinc-800">
+        <div className="mx-auto w-full max-w-6xl border-x border-zinc-800 px-5 py-20 sm:px-10">
+          <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div><p className="text-xs text-green-400">$ ls ./api</p><h2 className="mt-3 text-3xl text-zinc-100 sm:text-4xl">Available endpoints</h2></div>
+            <p className="max-w-md text-xs leading-6 text-zinc-600">Each response is a standalone, XML-safe SVG. Parameters are supplied through the query string.</p>
+          </div>
 
-    <footer className="siteFooter shell"><span className="brand"><span className="brandMark">S/</span> Sarindu&apos;s README Kit</span><p>A personal tool by Sarindu for keeping my GitHub profile consistent.</p></footer>
-  </main>;
+          <div className="grid border-l border-t border-zinc-800 lg:grid-cols-2">
+            {widgets.map((widget, index) => (
+              <article key={widget.command} className={`flex min-h-80 flex-col border-b border-r border-zinc-800 bg-[#0c0c0c] p-5 sm:p-7 ${index === 4 ? "lg:col-span-2" : ""}`}>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-green-400">GET /api/{widget.command}</span>
+                  <span className="text-zinc-700">[{String(index + 1).padStart(2, "0")}]</span>
+                </div>
+                <h3 className="mt-5 text-lg text-zinc-200">{widget.name}</h3>
+                <p className="mt-2 text-xs leading-5 text-zinc-600">{widget.description}</p>
+                <div className="my-6 flex min-h-32 flex-1 items-center overflow-x-auto border border-zinc-900 bg-[#070707] p-3">
+                  <img className="mx-auto block max-w-full" src={`/api/${widget.path}`} alt={`${widget.name} preview`} />
+                </div>
+                <a className="text-xs text-zinc-500 hover:text-green-400" href={`/api/${widget.path}`} target="_blank">$ open endpoint ↗</a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="reference" className="mx-auto grid w-full max-w-6xl border-x border-zinc-800 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="border-b border-zinc-800 px-5 py-20 sm:px-10 lg:border-b-0 lg:border-r">
+          <p className="text-xs text-green-400">$ cat API.md</p>
+          <h2 className="mt-4 text-3xl text-zinc-100 sm:text-4xl">Query reference</h2>
+          <p className="mt-5 text-xs leading-6 text-zinc-600">The full endpoint-specific reference, limits, defaults, and Markdown examples live in the project README.</p>
+          <a href="https://github.com/sarinduu" className="mt-8 inline-block text-xs text-zinc-400 hover:text-green-400">$ view README.md ↗</a>
+        </div>
+        <div className="px-5 py-20 sm:px-10">
+          <div className="border border-zinc-800 bg-zinc-950">
+            <div className="border-b border-zinc-800 px-4 py-3 text-[11px] text-zinc-600">parameters.env</div>
+            {parameters.map(([key, description]) => (
+              <div key={key} className="grid gap-2 border-b border-zinc-900 px-4 py-4 text-xs last:border-0 sm:grid-cols-[120px_1fr]">
+                <code className="text-green-400">{key}=</code><span className="text-zinc-500">{description}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 overflow-x-auto border border-zinc-800 bg-zinc-950 p-5 text-xs leading-6">
+            <p className="text-zinc-600"># local README usage</p>
+            <p><span className="text-zinc-400">![Tech Stack]</span><span className="text-zinc-600">(</span><span className="text-green-400">http://localhost:3000/api/title?text=Tech%20Stack</span><span className="text-zinc-600">)</span></p>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-zinc-800">
+        <div className="mx-auto flex min-h-24 w-full max-w-6xl flex-col justify-center gap-2 border-x border-zinc-800 px-5 text-[11px] text-zinc-600 sm:flex-row sm:items-center sm:justify-between sm:px-10">
+          <span><span className="text-green-400">sarindu@readme</span>:~$ exit</span>
+          <span>process finished with code 0</span>
+        </div>
+      </footer>
+    </main>
+  );
 }
