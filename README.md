@@ -40,9 +40,12 @@ GitHub cannot load images from `localhost`. Local URLs only work in a local Mark
 - Encode spaces as `%20`.
 - Encode `#` in hex colors as `%23`.
 - Separate typing phrases with `%7C`, the URL-encoded form of `|`.
+- Use the optional `v` parameter to invalidate an old browser/CDN copy after a design change.
 - Unsupported colors fall back to the widget default.
 - All text is length-limited and XML-escaped before rendering.
-- SVG responses use `image/svg+xml` and revalidate on each request so local changes do not get stuck behind an old browser image cache.
+- Undocumented and duplicate parameters are rejected with `400`.
+- Query strings longer than 2,048 characters or containing more than 10 parameters are rejected.
+- SVG responses use `image/svg+xml`, cache in browsers for five minutes, and cache on a CDN for one day.
 
 ## Browser header
 
@@ -181,6 +184,28 @@ Customized labels:
 
 ![README Footer](http://localhost:3000/api/footer?text=Keep%20building.%20Keep%20learning.)
 ```
+
+## Vercel deployment and security
+
+This service is designed to run on Vercel Hobby behind Vercel's CDN and automatic DDoS protection. It does not require environment variables, credentials, a database, or external APIs.
+
+Successful SVG responses include:
+
+- Five-minute browser caching
+- One-day shared/CDN caching with seven-day stale-while-revalidate
+- A restrictive SVG Content Security Policy
+- MIME-sniffing protection
+- Cross-origin embedding support for GitHub README images
+
+The website also sends Content Security Policy, HSTS, frame-denial, referrer, MIME-sniffing, and browser-permission headers. Error responses are never cached.
+
+After changing a widget design, increment `v` in the README URL:
+
+```md
+![Tech Stack](https://your-project.vercel.app/api/title?text=Tech%20Stack&v=2)
+```
+
+No application-level rate limiter is enabled by default. CDN caching and Vercel's platform protection should be used first; monitor the Vercel Usage and Firewall dashboards and add a conservative WAF rule only if sustained abuse appears.
 
 ## Commands
 
