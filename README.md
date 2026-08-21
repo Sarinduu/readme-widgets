@@ -1,36 +1,193 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sarindu's README Kit
 
-## Getting Started
+A personal Next.js service that renders the SVG widgets used in my GitHub profile. The widgets share the warm visual language from my original hand-built assets and can be updated through URL parameters instead of editing SVG files.
 
-First, run the development server:
+This project currently provides five endpoints:
+
+- Browser header
+- Animated typing titles
+- Section title
+- Section subtitle
+- README footer
+
+GitHub statistics and profile-view counters are intentionally not included.
+
+## Test locally
+
+Install dependencies and start the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open an endpoint directly in the browser:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000/api/title?text=Tech%20Stack
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Or paste it into a local Markdown file:
 
-## Learn More
+```md
+![Tech Stack](http://localhost:3000/api/title?text=Tech%20Stack)
+```
 
-To learn more about Next.js, take a look at the following resources:
+GitHub cannot load images from `localhost`. Local URLs only work in a local Markdown preview while the development server is running. After deployment, replace `http://localhost:3000` with the public deployment URL.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## URL rules
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Encode spaces as `%20`.
+- Encode `#` in hex colors as `%23`.
+- Separate typing phrases with `%7C`, the URL-encoded form of `|`.
+- Unsupported colors fall back to the widget default.
+- All text is length-limited and XML-escaped before rendering.
+- SVG responses use `image/svg+xml` and revalidate on each request so local changes do not get stuck behind an old browser image cache.
 
-## Deploy on Vercel
+## Browser header
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Endpoint:** `/api/browser`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Recreates the cream browser bar used at the top of my README, including the three status dots, address field, and menu icon.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `url` | Text shown in the address field. Maximum 80 characters. | `sarindu.dev` |
+| `color` | Address text color. | `#625B52` |
+| `accent` | First browser-dot color. | `#B98245` |
+| `background` | Main browser-bar background. | `#F7F1E8` |
+
+```md
+![Browser Header](http://localhost:3000/api/browser?url=sarindu.dev)
+```
+
+Customized example:
+
+```md
+![Browser Header](http://localhost:3000/api/browser?url=github.com%2Fsarinduu&accent=%23B98245)
+```
+
+## Typing titles
+
+**Endpoint:** `/api/typing`
+
+Cycles through one to three professional titles. Each phrase is revealed, held, erased, and followed by the next phrase. The SVG and reveal mask automatically grow with extra safety space around the longest accepted phrase, so long titles are not clipped. The original underline and bottom dot are removed.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `text` | One to three phrases separated by `|`. Each phrase is limited to 42 characters. | `Software Engineer\|Full-Stack Developer\|Open Source Builder` |
+| `color` | Text color. When omitted, the text automatically switches between `#2C2925` and `#F8F6F1` for light/dark themes. | Theme-aware |
+| `accent` | Animated cursor color. | `#B98245` |
+| `duration` | Seconds spent typing, holding, and erasing each phrase. Allowed range: `3`–`10`. | `6` |
+
+```md
+![Typing Titles](http://localhost:3000/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder)
+```
+
+Slower two-title example:
+
+```md
+![Typing Titles](http://localhost:3000/api/typing?text=Software%20Engineer%7COpen%20Source%20Builder&duration=8)
+```
+
+## Section title
+
+**Endpoint:** `/api/title`
+
+Renders the large animated section divider with curved lines, moving marker, dashed lower arc, and gold details. Its canvas and every decorative point are calculated symmetrically from the text bounds, so longer titles keep equal clearance on both sides.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `text` | Section heading. Maximum 90 characters. | `Tech Stack` |
+| `color` | Heading color. When omitted, it follows the viewer's light/dark theme. | Theme-aware |
+| `accent` | Dots, outer lines, and moving marker color. | `#D2A162` |
+| `line` | Curved and dashed decorative line color. | `#625B52` |
+| `size` | Font size. Allowed range: `16`–`38`; the SVG width grows when needed. | `25` |
+
+```md
+![Tech Stack](http://localhost:3000/api/title?text=Tech%20Stack)
+```
+
+Long-title example:
+
+```md
+![Open Source Projects](http://localhost:3000/api/title?text=Open%20Source%20Projects%20and%20Experiments)
+```
+
+Customized example:
+
+```md
+![Current Projects](http://localhost:3000/api/title?text=Current%20Projects&accent=%23B98245&line=%23DDD2C3&size=28)
+```
+
+## Section subtitle
+
+**Endpoint:** `/api/subtitle`
+
+Renders a compact subsection label between two animated lines. The SVG width and equal line gaps adapt to the label width.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `text` | Subsection label. Maximum 70 characters. | `Frontend` |
+| `color` | Label color. When omitted, it follows the viewer's light/dark theme. | Theme-aware |
+| `line` | Color of the animated side lines. | `#625B52` |
+| `size` | Font size. Allowed range: `10`–`24`; the SVG width grows when needed. | `14` |
+
+```md
+![Frontend](http://localhost:3000/api/subtitle?text=Frontend%20Development)
+```
+
+Long-label example:
+
+```md
+![Tools](http://localhost:3000/api/subtitle?text=Design%2C%20Development%20and%20Productivity%20Tools)
+```
+
+## README footer
+
+**Endpoint:** `/api/footer`
+
+Renders the cream status bar used to close my README, with a left status indicator, centered message, and right-side visitor-log decoration.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `text` | Center footer message. Maximum 80 characters. | `Keep building. Keep learning.` |
+| `status` | Small label on the left. Maximum 16 characters. | `READY` |
+| `note` | Small label on the right. Maximum 20 characters. | `VISITOR LOG` |
+| `color` | Center message color. | `#2C2925` |
+| `accent` | Right-side outlined icon color. | `#B98245` |
+| `background` | Footer background color. | `#F7F1E8` |
+
+```md
+![README Footer](http://localhost:3000/api/footer?text=Keep%20building.%20Keep%20learning.)
+```
+
+Customized labels:
+
+```md
+![README Footer](http://localhost:3000/api/footer?text=Thanks%20for%20visiting.&status=ONLINE&note=SARINDU.DEV)
+```
+
+## Full local README example
+
+```md
+![Browser Header](http://localhost:3000/api/browser?url=sarindu.dev)
+
+![Typing Titles](http://localhost:3000/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder)
+
+![Tech Stack](http://localhost:3000/api/title?text=Tech%20Stack)
+
+![Frontend](http://localhost:3000/api/subtitle?text=Frontend%20Development)
+
+![README Footer](http://localhost:3000/api/footer?text=Keep%20building.%20Keep%20learning.)
+```
+
+## Commands
+
+```bash
+pnpm dev                 # Start the local development server
+pnpm lint                # Run ESLint
+pnpm exec tsc --noEmit   # Check TypeScript
+pnpm exec next build --webpack  # Create a production build
+pnpm start               # Run the production build
+```
