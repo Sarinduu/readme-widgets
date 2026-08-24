@@ -2,15 +2,18 @@
 
 A personal Next.js service that renders the SVG widgets used in my GitHub profile. The widgets share the warm visual language from my original hand-built assets and can be updated through URL parameters instead of editing SVG files.
 
-This project currently provides five endpoints:
+This project currently provides eight endpoints:
 
 - Browser header
 - Animated typing titles
 - Section title
 - Section subtitle
 - README footer
+- GitHub profile overview
+- GitHub top languages
+- GitHub contribution activity
 
-GitHub statistics and profile-view counters are intentionally not included.
+Profile-view counters are intentionally not included.
 
 ## Test locally
 
@@ -18,8 +21,17 @@ Install dependencies and start the development server:
 
 ```bash
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
+
+Add a GitHub access token to `.env.local` before testing the statistics cards:
+
+```dotenv
+GITHUB_TOKEN=your_token_here
+```
+
+The token is server-only. Do not prefix it with `NEXT_PUBLIC_` or commit `.env.local`.
 
 Open an endpoint directly in the browser:
 
@@ -46,6 +58,7 @@ GitHub cannot load images from `localhost`. Local URLs only work in a local Mark
 - Undocumented and duplicate parameters are rejected with `400`.
 - Query strings longer than 2,048 characters or containing more than 10 parameters are rejected.
 - SVG responses use `image/svg+xml`, cache in browsers for five minutes, and cache on a CDN for one day.
+- GitHub cards accept only `username` and use a six-hour shared/CDN cache.
 
 ## Browser header
 
@@ -171,6 +184,50 @@ Customized labels:
 ![README Footer](http://localhost:3000/api/footer?text=Thanks%20for%20visiting.&status=ONLINE&note=SARINDU.DEV)
 ```
 
+## GitHub profile overview
+
+**Endpoint:** `/api/github/overview`
+
+Renders a `900 × 260` horizontal card with the account name, contributions from the last year, stars, public repository count, followers, account age, and a 12-month activity graph.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `username` | GitHub login to load. Required; 1–39 characters. | None |
+
+```md
+![GitHub Overview](http://localhost:3000/api/github/overview?username=sarinduu)
+```
+
+## GitHub top languages
+
+**Endpoint:** `/api/github/languages`
+
+Renders a `442 × 320` vertical card containing the five largest languages by byte size. Archived repositories and forks are omitted.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `username` | GitHub login to load. Required; 1–39 characters. | None |
+
+```md
+![Top Languages](http://localhost:3000/api/github/languages?username=sarinduu)
+```
+
+## GitHub contribution activity
+
+**Endpoint:** `/api/github/activity`
+
+Renders a `442 × 320` vertical card with a 365-day breakdown of commits, pull requests, issues, and reviews, plus total contributions, active days, current streak, and longest streak.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `username` | GitHub login to load. Required; 1–39 characters. | None |
+
+```md
+![GitHub Activity](http://localhost:3000/api/github/activity?username=sarinduu)
+```
+
+The GitHub API returns at most 100 repositories in the current query. Star, fork, and language totals are therefore based on the 100 most recently pushed public repositories when an account has more than 100. Contribution counts come from GitHub's contribution calendar and may include activity GitHub attributes to the account.
+
 ## Full local README example
 
 ```md
@@ -182,17 +239,27 @@ Customized labels:
 
 ![Frontend](http://localhost:3000/api/subtitle?text=Frontend%20Development)
 
+![GitHub Overview](http://localhost:3000/api/github/overview?username=sarinduu)
+
+<p>
+  <img width="49%" src="http://localhost:3000/api/github/languages?username=sarinduu" alt="Top Languages">
+  <img width="49%" src="http://localhost:3000/api/github/activity?username=sarinduu" alt="GitHub Activity">
+</p>
+
 ![README Footer](http://localhost:3000/api/footer?text=Keep%20building.%20Keep%20learning.)
 ```
 
 ## Vercel deployment and security
 
-This service is designed to run on Vercel Hobby behind Vercel's CDN and automatic DDoS protection. It does not require environment variables, credentials, a database, or external APIs.
+This service is designed to run on Vercel Hobby behind Vercel's CDN and automatic DDoS protection. The five decorative widgets need no external services. The three statistics cards call GitHub's GraphQL API and require a server-side `GITHUB_TOKEN`; no database is required.
+
+Before deploying, create a GitHub token intended only for this service. Public profile data does not require access to private repositories. Add it in **Vercel → Project → Settings → Environment Variables** as `GITHUB_TOKEN`, enable it for Production and Preview as needed, and redeploy. Never use a token in a README URL.
 
 Successful SVG responses include:
 
 - Five-minute browser caching
 - One-day shared/CDN caching with seven-day stale-while-revalidate
+- Six-hour shared caching for GitHub data, with one-day stale-while-revalidate
 - A restrictive SVG Content Security Policy
 - MIME-sniffing protection
 - Cross-origin embedding support for GitHub README images
@@ -205,7 +272,7 @@ After changing a widget design, increment `v` in the README URL:
 ![Tech Stack](https://your-project.vercel.app/api/title?text=Tech%20Stack&v=2)
 ```
 
-No application-level rate limiter is enabled by default. CDN caching and Vercel's platform protection should be used first; monitor the Vercel Usage and Firewall dashboards and add a conservative WAF rule only if sustained abuse appears.
+No application-level rate limiter is enabled by default. Strict username validation, a single permitted query parameter, CDN caching, GitHub's own API limits, and Vercel's platform protection form the first layer. Monitor the Vercel Usage and Firewall dashboards and add a conservative WAF rule only if sustained abuse appears.
 
 ## Commands
 
