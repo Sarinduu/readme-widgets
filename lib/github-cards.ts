@@ -1,6 +1,6 @@
 import type { GitHubStats } from "./github";
 
-export type GitHubCard = "overview" | "languages" | "activity";
+export type GitHubCard = "overview" | "languages" | "activity" | "combined";
 
 const palette = {
   forest: "#345D57",
@@ -139,12 +139,31 @@ export function renderActivity(stats: GitHubStats) {
   return shell(442, 320, `${stats.login} GitHub contribution activity`, body);
 }
 
+function positionCard(svg: string, x: number, y: number) {
+  return svg.replace("<svg ", `<svg x="${x}" y="${y}" `);
+}
+
+export function renderCombined(stats: GitHubStats) {
+  const overview = positionCard(renderOverview(stats), 0, 0);
+  const languages = positionCard(renderLanguages(stats), 0, 276);
+  const activity = positionCard(renderActivity(stats), 458, 276);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="900" height="596" viewBox="0 0 900 596" role="img" aria-label="${escapeXml(stats.login)} complete GitHub statistics">
+  ${overview}
+  ${languages}
+  ${activity}
+</svg>`;
+}
+
 export function renderGitHubError(
   card: GitHubCard,
   username: string,
   message: string,
 ) {
-  const [width, height] = card === "overview" ? [900, 260] : [442, 320];
+  const [width, height] = card === "combined"
+    ? [900, 596]
+    : card === "overview"
+      ? [900, 260]
+      : [442, 320];
   const body = `${header(width, username || "user", card)}
   <text class="ink" x="24" y="88" font-size="17" font-weight="700">GitHub data unavailable</text>
   <text class="muted" x="24" y="112" font-size="11">${escapeXml(message)}</text>
