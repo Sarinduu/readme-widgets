@@ -34,6 +34,12 @@ const widgets = [
   },
 ] as const;
 
+const githubCards = [
+  { command: "overview", name: "Profile overview", description: "A wide summary of contributions, stars, repositories, followers, account age, and monthly activity.", size: "900 × 260" },
+  { command: "languages", name: "Top languages", description: "Language distribution across public, owned, non-fork repositories.", size: "442 × 320" },
+  { command: "activity", name: "Contribution activity", description: "A 365-day breakdown of commits, pull requests, issues, reviews, and streak metrics.", size: "442 × 320" },
+] as const;
+
 const parameters = [
   ["text", "Widget copy or pipe-separated typing phrases"],
   ["url", "Browser address-field content"],
@@ -43,6 +49,7 @@ const parameters = [
   ["background", "Browser or footer background"],
   ["size", "Title and subtitle font size"],
   ["duration", "Seconds per typing phrase"],
+  ["username", "GitHub login used by all three stats cards"],
 ] as const;
 
 export default function Home() {
@@ -71,7 +78,7 @@ export default function Home() {
           Sarindu&apos;s personal<br />README widget service<span className="animate-pulse text-green-400">_</span>
         </h1>
         <p className="mt-8 max-w-2xl text-sm leading-7 text-zinc-500 sm:text-base">
-          Five server-rendered SVG endpoints used to keep my GitHub profile consistent. No dashboard, accounts, analytics, or external APIs.
+          Eight server-rendered SVG endpoints used to keep my GitHub profile consistent. No dashboard, accounts, or analytics.
         </p>
         <div className="mt-10 flex flex-col gap-3 text-xs sm:flex-row sm:items-center">
           <a href="#widgets" className="w-fit border border-zinc-600 bg-zinc-100 px-4 py-3 text-zinc-950 hover:bg-white">
@@ -89,6 +96,27 @@ export default function Home() {
           <div className="space-y-2 overflow-hidden px-3 py-6 sm:px-8">
             <img className="mx-auto block w-full" src="/api/title?text=README%20Widgets" alt="README Widgets title" />
             <img className="mx-auto block max-w-full" src="/api/typing?text=Software%20Engineer%7CFull-Stack%20Developer%7COpen%20Source%20Builder" alt="Animated professional titles" />
+          </div>
+        </div>
+      </section>
+
+      <section id="github-stats" className="border-b border-zinc-800">
+        <div className="mx-auto w-full max-w-6xl border-x border-zinc-800 px-5 py-20 sm:px-10">
+          <p className="text-xs text-green-400">$ ls ./api/github</p>
+          <h2 className="mt-3 text-3xl text-zinc-100 sm:text-4xl">GitHub statistics</h2>
+          <p className="mt-4 max-w-2xl text-xs leading-6 text-zinc-600">Public GitHub data for a supplied username. Results are fetched server-side and cached; the API token is never exposed in the SVG or page.</p>
+          <div className="mt-10 grid gap-5 lg:grid-cols-2">
+            {githubCards.map((card, index) => (
+              <article key={card.command} className={`border border-zinc-800 bg-[#0c0c0c] p-5 sm:p-7 ${index === 0 ? "lg:col-span-2" : ""}`}>
+                <div className="flex items-center justify-between gap-4 text-xs"><span className="text-green-400">GET /api/github/{card.command}</span><span className="text-zinc-700">{card.size}</span></div>
+                <h3 className="mt-5 text-lg text-zinc-200">{card.name}</h3>
+                <p className="mt-2 text-xs leading-5 text-zinc-600">{card.description}</p>
+                <div className="mt-6 overflow-x-auto border border-zinc-900 bg-[#070707] p-3">
+                  <img className="mx-auto block max-w-full" src={`/api/github/${card.command}?username=sarinduu`} alt={`${card.name} preview`} />
+                </div>
+                <a className="mt-5 inline-block text-xs text-zinc-500 hover:text-green-400" href={`/api/github/${card.command}?username=sarinduu`} target="_blank">$ open endpoint ↗</a>
+              </article>
+            ))}
           </div>
         </div>
       </section>
