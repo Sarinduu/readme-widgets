@@ -35,6 +35,7 @@ const widgets = [
 ] as const;
 
 const githubCards = [
+  { command: "combined", name: "Combined statistics", description: "All three GitHub cards in one README-ready image with consistent row and column spacing.", size: "900 × 596" },
   { command: "overview", name: "Profile overview", description: "A wide summary of contributions, stars, repositories, followers, account age, and monthly activity.", size: "900 × 260" },
   { command: "languages", name: "Top languages", description: "Language distribution across public, owned, non-fork repositories.", size: "442 × 320" },
   { command: "activity", name: "Contribution activity", description: "A 365-day breakdown of commits, pull requests, issues, reviews, and streak metrics.", size: "442 × 320" },
@@ -78,7 +79,7 @@ export default function Home() {
           Sarindu&apos;s personal<br />README widget service<span className="animate-pulse text-green-400">_</span>
         </h1>
         <p className="mt-8 max-w-2xl text-sm leading-7 text-zinc-500 sm:text-base">
-          Eight server-rendered SVG endpoints used to keep my GitHub profile consistent. No dashboard, accounts, or analytics.
+          Nine server-rendered SVG endpoints used to keep my GitHub profile consistent. No dashboard, accounts, or analytics.
         </p>
         <div className="mt-10 flex flex-col gap-3 text-xs sm:flex-row sm:items-center">
           <a href="#widgets" className="w-fit border border-zinc-600 bg-zinc-100 px-4 py-3 text-zinc-950 hover:bg-white">
@@ -107,7 +108,7 @@ export default function Home() {
           <p className="mt-4 max-w-2xl text-xs leading-6 text-zinc-600">Public GitHub data for a supplied username. Results are fetched server-side and cached; the API token is never exposed in the SVG or page.</p>
           <div className="mt-10 grid gap-5 lg:grid-cols-2">
             {githubCards.map((card, index) => (
-              <article key={card.command} className={`border border-zinc-800 bg-[#0c0c0c] p-5 sm:p-7 ${index === 0 ? "lg:col-span-2" : ""}`}>
+              <article key={card.command} className={`border border-zinc-800 bg-[#0c0c0c] p-5 sm:p-7 ${index < 2 ? "lg:col-span-2" : ""}`}>
                 <div className="flex items-center justify-between gap-4 text-xs"><span className="text-green-400">GET /api/github/{card.command}</span><span className="text-zinc-700">{card.size}</span></div>
                 <h3 className="mt-5 text-lg text-zinc-200">{card.name}</h3>
                 <p className="mt-2 text-xs leading-5 text-zinc-600">{card.description}</p>

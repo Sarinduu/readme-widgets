@@ -1,13 +1,14 @@
 import { fetchGitHubStats, GitHubStatsError, isGitHubUsername } from "@/lib/github";
 import {
   renderActivity,
+  renderCombined,
   renderGitHubError,
   renderLanguages,
   renderOverview,
   type GitHubCard,
 } from "@/lib/github-cards";
 
-const cards = new Set<GitHubCard>(["overview", "languages", "activity"]);
+const cards = new Set<GitHubCard>(["overview", "languages", "activity", "combined"]);
 
 function jsonError(message: string, status: number) {
   return Response.json({ error: message }, {
@@ -46,7 +47,12 @@ export async function GET(request: Request, context: { params: Promise<{ card: s
 
   try {
     const stats = await fetchGitHubStats(username);
-    const renderers = { overview: renderOverview, languages: renderLanguages, activity: renderActivity };
+    const renderers = {
+      overview: renderOverview,
+      languages: renderLanguages,
+      activity: renderActivity,
+      combined: renderCombined,
+    };
     return svgResponse(
       renderers[card](stats),
       "public, max-age=300, s-maxage=21600, stale-while-revalidate=86400",

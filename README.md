@@ -2,7 +2,7 @@
 
 A personal Next.js service that renders the SVG widgets used in my GitHub profile. The widgets share the warm visual language from my original hand-built assets and can be updated through URL parameters instead of editing SVG files.
 
-This project currently provides eight endpoints:
+This project currently provides nine endpoints:
 
 - Browser header
 - Animated typing titles
@@ -12,6 +12,7 @@ This project currently provides eight endpoints:
 - GitHub profile overview
 - GitHub top languages
 - GitHub contribution activity
+- Combined GitHub statistics
 
 Profile-view counters are intentionally not included.
 
@@ -184,6 +185,20 @@ Customized labels:
 ![README Footer](http://localhost:3000/api/footer?text=Thanks%20for%20visiting.&status=ONLINE&note=SARINDU.DEV)
 ```
 
+## Combined GitHub statistics
+
+**Endpoint:** `/api/github/combined`
+
+Renders all three statistics cards as one `900 × 596` SVG. The `900 × 260` overview is placed in the first row. After a `16px` vertical gap, the two `442 × 320` cards are placed side by side with a `16px` gap between them.
+
+| Parameter | What it does | Default |
+| --- | --- | --- |
+| `username` | GitHub login to load. Required; 1–39 characters. | None |
+
+```md
+![GitHub Statistics](http://localhost:3000/api/github/combined?username=sarinduu)
+```
+
 ## GitHub profile overview
 
 **Endpoint:** `/api/github/overview`
@@ -239,19 +254,14 @@ The GitHub API returns at most 100 repositories in the current query. Star, fork
 
 ![Frontend](http://localhost:3000/api/subtitle?text=Frontend%20Development)
 
-![GitHub Overview](http://localhost:3000/api/github/overview?username=sarinduu)
-
-<p>
-  <img width="49%" src="http://localhost:3000/api/github/languages?username=sarinduu" alt="Top Languages">
-  <img width="49%" src="http://localhost:3000/api/github/activity?username=sarinduu" alt="GitHub Activity">
-</p>
+![GitHub Statistics](http://localhost:3000/api/github/combined?username=sarinduu)
 
 ![README Footer](http://localhost:3000/api/footer?text=Keep%20building.%20Keep%20learning.)
 ```
 
 ## Vercel deployment and security
 
-This service is designed to run on Vercel Hobby behind Vercel's CDN and automatic DDoS protection. The five decorative widgets need no external services. The three statistics cards call GitHub's GraphQL API and require a server-side `GITHUB_TOKEN`; no database is required.
+This service is designed to run on Vercel Hobby behind Vercel's CDN and automatic DDoS protection. The five decorative widgets need no external services. The four statistics endpoints call GitHub's GraphQL API and require a server-side `GITHUB_TOKEN`; no database is required.
 
 Before deploying, create a GitHub token intended only for this service. Public profile data does not require access to private repositories. Add it in **Vercel → Project → Settings → Environment Variables** as `GITHUB_TOKEN`, enable it for Production and Preview as needed, and redeploy. Never use a token in a README URL.
 
